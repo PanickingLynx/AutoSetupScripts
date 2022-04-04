@@ -101,7 +101,7 @@ function WorkstationSetup{
 }
 
 function PersonalSetup{
-       
+    #Work in Progress
 }
 
 function MainMenu{
@@ -123,4 +123,6 @@ function MainMenu{
     }
 }
 
+preRuntime;
 MainMenu;
+println("All jobs done!");
