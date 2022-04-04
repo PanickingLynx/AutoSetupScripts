@@ -18,6 +18,7 @@ function print{
 }
 
 function preRuntime{
+    println("Running pre-runtime setup...");
     if (!Get-InstalledModule -Name "PSWindowsUpdate"){
         Install-Module PSWindowsUpdate;
     }
@@ -33,6 +34,7 @@ function preRuntime{
     }  
     # Now set the value
     New-ItemProperty -Path $RegistryPath -Name $Name -Value $Value -PropertyType DWORD -Force
+    println("DONE!");
 }
 
 function getComponent{
@@ -52,7 +54,14 @@ function getComponent{
     }else{
         Start-Process -FilePath "./$FileName $FileParameters" -Wait;
     }
-    
+    println("DONE!");
+}
+
+function cleanUp{
+    println("Cleaning up...");
+    cd ..;
+    rm "./TEMP";
+    println("DONE!");
 }
 
 function WorkstationSetup{
@@ -97,6 +106,8 @@ function WorkstationSetup{
 
         #Krita 
         getComponent -Url "https://download.kde.org/stable/krita/5.0.2/krita-x64-5.0.2-setup.exe" -FileName "KritaSetup.exe" -FileParameters "/S" -ComponentName "Krita" -IsMsi $false -IsZip $false;
+        
+        println("DONE!");
     }
 }
 
