@@ -1,5 +1,11 @@
 # Auto-Setup Script for my personal Windows Machines
 
+param (
+    [Boolean]$Unattended,
+    [Boolean]$GetExtras,
+    [Int32]$MachineType
+)
+
 $scriptpath = $MyInvocation.MyCommand.Path
 $dir = Split-Path $scriptpath
 
@@ -34,6 +40,19 @@ function preRuntime{
     }
     # Now set the value
     Set-ItemProperty -Path $RegistryPath -Name $Name -Value $Value
+
+    $includeExtras = Read-Host "Would you like to install extra tools? <y/n>: "
+    if ($includeExtras -eq "y" -or $GetExtras ){
+        println("Resuming with extras...")
+        $extras = $true;
+    }
+    else{
+        println("Resuming without extras...")
+        $extras = $false;
+    }
+    mkdir -Path $dir/TEMP/;
+    cd $dir/TEMP/;
+
     println("DONE!");
 }
 
@@ -65,18 +84,6 @@ function cleanUp{
 }
 
 function WorkstationSetup{
-    $includeExtras = Read-Host "Would you like to install extra tools? <y/n>: "
-    if ($includeExtras -eq "y"){
-        println("Resuming with extras...")
-        $extras = $true;
-    }
-    else{
-        println("Resuming without extras...")
-        $extras = $false;
-    }
-    mkdir -Path $dir/TEMP/;
-    cd $dir/TEMP/;
-
     # Visual Studio Code
     getComponent -Url "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" -FileName "VSCodeSetup.exe" -FileParameters "/VERYSILENT /NORESTART /MERGETASKS=!runcode" -ComponentName "Visual Studio Code" -IsMsi $false -IsZip $false;
 
@@ -116,21 +123,33 @@ function PersonalSetup{
 }
 
 function MainMenu{
-    print("######################## PanickingLynx: Automatic Workspace Setup ######################## `n `n");
-    println("Please select from the following:");
-    println("----------------------------------");
-    println("Workstation: 1");
-    println("Personal: 2");
-    $decision = Read-Host "Selection: ";
-    if ($decision -eq 1){
-        WorkstationSetup;
-    }
-    elseif ($decision -eq 2){
-        PersonalSetup;
-    }
-    else {
-        clear;
-        println("Please insert 1 or 2");
+    if (!$Unattended){
+        print("######################## PanickingLynx: Automatic Workspace Setup ######################## `n `n");
+        println("Please select from the following:");
+        println("----------------------------------");
+        println("Workstation: 1");
+        println("Personal: 2");
+        $decision = Read-Host "Selection: ";
+        if ($decision -eq 1){
+            WorkstationSetup;
+        }
+        elseif ($decision -eq 2){
+            PersonalSetup;
+        }
+        else {
+            clear;
+            println("Please insert 1 or 2");
+        }
+    }else{
+        if ($MachineType -eq 1){
+            WorkstationSetup;
+        }
+        elseif ($MachineType -eq 2){
+            PersonalSetup;
+        }
+        else {
+            println("Please insert 1 or 2 as machine type");
+        }
     }
 }
 
