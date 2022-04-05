@@ -31,9 +31,9 @@ function preRuntime{
     # Create the key if it does not exist
     if (-NOT (Test-Path $RegistryPath)) {
         New-Item -Path $RegistryPath -Force | Out-Null
-    }  
+    }
     # Now set the value
-    New-ItemProperty -Path $RegistryPath -Name $Name -Value $Value -PropertyType DWORD -Force
+    Set-ItemProperty -Path $RegistryPath -Name $Name -Value $Value
     println("DONE!");
 }
 
