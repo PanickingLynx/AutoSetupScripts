@@ -41,17 +41,8 @@ function preRuntime{
     # Now set the value
     Set-ItemProperty -Path $RegistryPath -Name $Name -Value $Value
 
-    $includeExtras = Read-Host "Would you like to install extra tools? <y/n>: "
-    if ($includeExtras -eq "y" -or $GetExtras ){
-        println("Resuming with extras...")
-        $extras = $true;
-    }
-    else{
-        println("Resuming without extras...")
-        $extras = $false;
-    }
     mkdir -Path $dir/TEMP/;
-    cd $dir/TEMP/;
+    Set-Location $dir/TEMP/;
 
     println("DONE!");
 }
@@ -61,7 +52,7 @@ function getComponent{
         [String]$Url, [String]$FileName, [String]$FileParameters, [String]$ComponentName, [Boolean]$IsMsi, [Boolean]$IsZip
     )
     println("Getting $ComponentName...");
-    wget -Uri "$Url" -OutFile "./$FileName";
+    Invoke-WebRequest -Uri "$Url" -OutFile "./$FileName";
     println("Installing $ComponentName...");
     if ($IsZip){
         Expand-Archive -Path "./$FileName" -DestinationPath "./" 
@@ -78,12 +69,22 @@ function getComponent{
 
 function cleanUp{
     println("Cleaning up...");
-    cd ..;
-    rm "./TEMP";
+    Set-Location ..;
+    Remove-Item "./TEMP";
     println("DONE!");
 }
 
 function WorkstationSetup{
+    $includeExtras = Read-Host "Would you like to install extra tools? <y/n>: "
+    if ($includeExtras -eq "y" -or $GetExtras ){
+        println("Resuming with extras...")
+        $extras = $true;
+    }
+    else{
+        println("Resuming without extras...")
+        $extras = $false;
+    }
+
     # Visual Studio Code
     getComponent -Url "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" -FileName "VSCodeSetup.exe" -FileParameters "/VERYSILENT /NORESTART /MERGETASKS=!runcode" -ComponentName "Visual Studio Code" -IsMsi $false -IsZip $false;
 
@@ -120,6 +121,15 @@ function WorkstationSetup{
 
 function PersonalSetup{
     #Work in Progress
+    # $includeExtras = Read-Host "Would you like to install extra tools? <y/n>: "
+    # if ($includeExtras -eq "y" -or $GetExtras ){
+    #     println("Resuming with extras...")
+    #     $extras = $true;
+    # }
+    # else{
+    #     println("Resuming without extras...")
+    #     $extras = $false;
+    # }
 }
 
 function MainMenu{
@@ -137,7 +147,7 @@ function MainMenu{
             PersonalSetup;
         }
         else {
-            clear;
+            Clear-Host;
             println("Please insert 1 or 2");
         }
     }else{
